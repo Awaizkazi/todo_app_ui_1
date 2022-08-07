@@ -1,11 +1,22 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import '../constants/color.dart';
 import '../models/todo.dart';
 import '../widgets/todo_item.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final todosList = ToDo.todoList();
+
+  List<ToDo> _foundToDo = [];
+  final _todoController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +45,8 @@ class Home extends StatelessWidget {
                       for (ToDo todoo in todosList)
                         ToDoItem(
                           todo: todoo,
+                          onToDoChanged: _handleToDoChange,
+                          onDeleteItem: _deleteToDoItem,
                         ),
                     ],
                   ),
@@ -43,10 +56,88 @@ class Home extends StatelessWidget {
           ),
           Align(
             alignment: Alignment.bottomCenter,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.only(
+                      bottom: 20,
+                      right: 20,
+                      left: 20,
+                    ),
+                    // ignore: prefer_const_constructors
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      // ignore: prefer_const_literals_to_create_immutables
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey,
+                          offset: Offset(0.0, 0.0),
+                          blurRadius: 10.0,
+                          spreadRadius: 0.0,
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TextField(
+                      controller: _todoController,
+                      decoration: InputDecoration(
+                          hintText: 'Add a New ToDo item',
+                          border: InputBorder.none),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20, right: 20),
+                  child: ElevatedButton(
+                    child: Text(
+                      '+',
+                      style: TextStyle(
+                        fontSize: 40,
+                      ),
+                    ),
+                    onPressed: () {
+                      _addToDoItem(_todoController.text);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: tdBlue,
+                      minimumSize: Size(60, 60),
+                      elevation: 10,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           )
         ],
       ),
     );
+  }
+
+  void _handleToDoChange(ToDo todo) {
+    setState(
+      () {
+        todo.isDone = !todo.isDone;
+      },
+    );
+  }
+
+  void _deleteToDoItem(String id) {
+    setState(() {
+      todosList.removeWhere((item) => item.id == id);
+    });
+  }
+
+  void _addToDoItem(String toDo) {
+    setState(
+      () {
+        todosList.add(ToDo(
+            id: DateTime.now().microsecondsSinceEpoch.toString(),
+            todoText: toDo));
+      },
+    );
+    _todoController.clear();
   }
 
   Widget searchBox() {
@@ -88,6 +179,7 @@ class Home extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
+            // ignore: prefer_const_constructors
             child: ClipRRect(
               child: CircleAvatar(
                 backgroundImage: AssetImage('assets/images/avatar.png'),
