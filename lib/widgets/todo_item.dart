@@ -1,14 +1,21 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import '../constants/color.dart';
+import '../models/todo.dart';
 
 class ToDoItem extends StatelessWidget {
-  const ToDoItem({Key? key}) : super(key: key);
+  final ToDo todo;
+  const ToDoItem({Key? key, required this.todo}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(bottom: 20),
       child: ListTile(
-        onTap: () {},
+        onTap: () {
+          print('Clicked on ToDo');
+        },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -19,15 +26,15 @@ class ToDoItem extends StatelessWidget {
           color: tdBlue,
         ),
         title: Text(
-          'Check Mail',
+          todo.todoText!,
           style: TextStyle(
               fontSize: 16,
               color: tdBlack,
-              decoration: TextDecoration.lineThrough),
+              decoration: todo.isDone ? TextDecoration.lineThrough : null),
         ),
         trailing: Container(
           padding: EdgeInsets.all(0),
-          margin: EdgeInsets.symmetric(vertical: 12),
+          margin: const EdgeInsets.symmetric(vertical: 12),
           height: 35,
           width: 35,
           decoration: BoxDecoration(
@@ -38,7 +45,9 @@ class ToDoItem extends StatelessWidget {
             color: Colors.white,
             iconSize: 18,
             icon: Icon(Icons.delete),
-            onPressed: () {},
+            onPressed: () {
+              print('Clicked on Delete');
+            },
           ),
         ),
       ),
